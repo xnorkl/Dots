@@ -1,0 +1,20 @@
+README.md
+  s_c5e96fe7ac1775::t_b8490b8c7c4dc5 1-4,6-11,13-18,20-27,29-34,36-43,45-63
+  s_c5e96fe7ac1775::t_bbc33b3a7d06d8 5,12,19,28,35,44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cee3c6279f9fb8f19bad650c08bfb061b8f59451",
+  "prompts": {},
+  "sessions": {
+    "s_c5e96fe7ac1775": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f5deca67-7738-42bb-818b-832cc6e0bbe6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Thomas Gordon <gordon@fuzzeverything.com>"
+    }
+  }
+}
