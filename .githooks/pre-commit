@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Secret gate. Runs as pre-commit and pre-push (pre-push is a symlink to this file).
+# Enable per clone:   git config core.hooksPath .githooks
+# False positive?     append "pragma: allowlist secret" to the offending line.
+# Uses gitleaks too when installed (brew install gitleaks).
+set -euo pipefail
+
+BAD_FILES='(^|/)(\.env(\.[^/]*)?|id_(rsa|dsa|ecdsa|ed25519)|[^/]*\.(pem|key|p12|pfx|jks|keystore|kdbx|ovpn|tfstate|tfstate\.backup)|\.netrc|\.pgpass|\.git-credentials|\.aws/credentials|\.kube/config|[^/]*_history)$'
+OK_FILES='\.(example|sample|template|pub)$'
+SECRETS='-----BEGIN [A-Z ]*PRIVATE KEY|(AKIA|ASIA)[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|glpat-[A-Za-z0-9_-]{20}|xox[abposr]-[A-Za-z0-9-]{10,}|hooks\.slack\.com/services/T|AIza[0-9A-Za-z_-]{35}|[rs]k_live_[0-9A-Za-z]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|sk-(proj-)?[A-Za-z0-9_-]{32,}|npm_[A-Za-z0-9]{36}|eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.|_authToken=[A-Za-z0-9]|[a-z]+://[^/[:space:]:@]+:[^/[:space:]:@$]+@' # pragma: allowlist secret
+SECRETS_I='(pass(word|wd)?|secret|token|api[_-]?key|access[_-]?key)[a-z_]*["'\'']?[[:space:]]*[:=][[:space:]]*["'\''][^"'\''[:space:]$]{8,}["'\'']' # pragma: allowlist secret
+ALLOW='pragma: allowlist secret|gitleaks:allow'
+
+fail=0
+# $1 = changed file list, $2 = unified diff
+check() {
+  local hits
+  hits=$(grep -E "$BAD_FILES" <<<"$1" | grep -Ev "$OK_FILES" || true)
+  if [[ -n $hits ]]; then
+    echo "✖ sensitive file(s):"; sed 's/^/    /' <<<"$hits"; fail=1
+  fi
+  # added lines as "file: content"
+  local added
+  added=$(awk '/^\+\+\+ /{f=substr($0,7);next} /^\+/{print f": "substr($0,2)}' <<<"$2")
+  hits=$( { grep -E -e "$SECRETS" <<<"$added"; grep -Ei -e "$SECRETS_I" <<<"$added"; } | grep -Ev "$ALLOW" | sort -u | cut -c1-160 || true)
+  if [[ -n $hits ]]; then
+    echo "✖ possible secret(s):"; sed 's/^/    /' <<<"$hits"; fail=1
+  fi
+}
+
+case "${0##*/}" in
+  pre-commit)
+    check "$(git diff --cached --name-only --diff-filter=ACMR)" \
+          "$(git diff --cached -U0 --diff-filter=ACMR --no-color --no-ext-diff)"
+    if command -v gitleaks >/dev/null; then gitleaks git --pre-commit --staged --redact -v --no-banner --log-level warn || fail=1; fi
+    ;;
+  pre-push)
+    while read -r _lref lsha _rref rsha; do
+      [[ $lsha =~ ^0+$ ]] && continue                    # branch deletion
+      if [[ $rsha =~ ^0+$ ]] || ! git cat-file -e "$rsha" 2>/dev/null; then
+        range=("$lsha" --not --remotes)                  # new branch / unknown remote tip
+      else
+        range=("$rsha..$lsha")
+      fi
+      check "$(git log --format= --name-only --diff-filter=ACMR "${range[@]}" | sort -u)" \
+            "$(git log -p -U0 --format= --diff-filter=ACMR --no-color --no-ext-diff "${range[@]}")"
+      if command -v gitleaks >/dev/null; then gitleaks git --redact -v --no-banner --log-level warn --log-opts="${range[*]}" || fail=1; fi
+    done
+    ;;
+esac
+
+if (( fail )); then
+  echo "Blocked by .githooks/${0##*/}. Fix it, or mark false positives with 'pragma: allowlist secret'."
+  exit 1
+fi

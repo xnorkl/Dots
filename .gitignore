@@ -1,0 +1,52 @@
+# --- Secrets & credentials ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.kdbx
+*.ovpn
+*.tfstate
+*.tfstate.backup
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+!*.pub
+.netrc
+.pgpass
+.git-credentials
+.aws/credentials
+.aws/sso/
+.aws/cli/
+.kube/config
+.docker/config.json
+.config/gh/hosts.yml
+.gnupg/
+.password-store/
+*.secret
+*.secrets
+
+# --- Shell / REPL history (leaks commands, tokens pasted inline) ---
+*_history
+.histfile
+.lesshst
+.viminfo
+
+# --- Machine-local overrides (source these from your dotfiles, never commit) ---
+*.local
+.ssh/*
+!.ssh/config
+
+# --- OS / editor noise ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
