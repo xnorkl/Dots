@@ -31,13 +31,13 @@ id_ed25519*
 *.secret
 *.secrets
 
-# --- Shell / REPL history (leaks commands, tokens pasted inline) ---
+# --- Shell / REPL history ---
 *_history
 .histfile
 .lesshst
 .viminfo
 
-# --- Machine-local overrides (source these from your dotfiles, never commit) ---
+# --- Machine-local overrides ---
 *.local
 .ssh/*
 !.ssh/config
