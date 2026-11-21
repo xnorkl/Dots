@@ -1,0 +1,24 @@
+.githooks/pre-commit
+  s_c5e96fe7ac1775::t_62620f7ade71fb 35,47
+  s_c5e96fe7ac1775::t_3a3d773591d283 1-34,36-46,48-55
+.gitignore
+  s_c5e96fe7ac1775::t_c237c708c23ea4 1-52
+.githooks/pre-push
+  s_c5e96fe7ac1775::t_45ef4ae10b68ff 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7ada26ce31b3ff87df0a2a6528b66b7508771ed4",
+  "prompts": {},
+  "sessions": {
+    "s_c5e96fe7ac1775": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f5deca67-7738-42bb-818b-832cc6e0bbe6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Thomas Gordon <gordon@fuzzeverything.com>"
+    }
+  }
+}
