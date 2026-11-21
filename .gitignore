@@ -42,6 +42,13 @@ id_ed25519*
 .ssh/*
 !.ssh/config
 
+# --- Claude Code: only shared config; sessions, projects, caches, settings.local.json stay out ---
+.claude/*
+!.claude/CLAUDE.md
+!.claude/settings.json
+!.claude/hooks/
+.claude/hooks/peon-ping/
+
 # --- OS / editor noise ---
 .DS_Store
 Thumbs.db
