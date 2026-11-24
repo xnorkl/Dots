@@ -1,0 +1,3 @@
+# macos reads ~/Library/Preferences/glow/glow.yml
+style: "dracula"
+width: 100

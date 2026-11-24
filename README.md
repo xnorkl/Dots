@@ -29,6 +29,15 @@ for f in .config/nvim/init.lua .config/ghostty/config .config/htop/htoprc \
 done
 ```
 
+## glow
+
+```sh
+# linux
+curl -fsSL --create-dirs -o ~/.config/glow/glow.yml $RAW_URL/.config/glow/glow.yml
+# macos
+curl -fsSL --create-dirs -o ~/Library/Preferences/glow/glow.yml $RAW_URL/.config/glow/glow.yml
+```
+
 ## ssh
 
 ```sh
